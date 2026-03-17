@@ -192,14 +192,14 @@ function WatchTab({feed, setFeed}) {
   var st = cur ? cur.a + " on CYPHER: " + cur.c + " | Beat: " + cur.bt + " by " + cur.p : "";
 
   var handleTap = function() {
+    if (cur && cur.vid) return;
     if (!started.current) {
       started.current = true;
-      if (!muted && cur && !cur.vid) {
+      if (!muted && cur) {
         var b = BEATS.find(function(x) { return x.t === cur.bt; });
         if (b) engine.start(b); else engine.start({bpm: cur.bpm || 100, m: "Hard"});
       }
     } else {
-      if (cur && cur.vid) return;
       sMuted(function(m) {
         if (!m) { engine.stop(); }
         else if (cur) { var b = BEATS.find(function(x) { return x.t === cur.bt; }); if (b) engine.start(b); else engine.start({bpm: cur.bpm || 100, m: "Hard"}); }
@@ -210,7 +210,7 @@ function WatchTab({feed, setFeed}) {
 
   return (
     <div
-      onWheel={function(e) { if (pan) return; var n = Date.now(); if (n - lw.current < 600) return; if (e.deltaY > 20) { go("u"); lw.current = n; } else if (e.deltaY < -20) { go("d"); lw.current = n; } }}
+      onWheel={function(e) { if (pan) return; var n = Date.now(); if (n - lw.current < 300) return; if (e.deltaY > 20) { go("u"); lw.current = n; } else if (e.deltaY < -20) { go("d"); lw.current = n; } }}
       onTouchStart={function(e) { ty.current = e.touches[0].clientY; }}
       onTouchEnd={function(e) { var d = ty.current - e.changedTouches[0].clientY; if (Math.abs(d) > 60) go(d > 0 ? "u" : "d"); }}
       onClick={handleTap}
